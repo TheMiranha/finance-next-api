@@ -1,9 +1,8 @@
-import type { NextApiRequest } from 'next'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import yf from 'yahoo-finance2'
 
 export async function GET(
-  req: NextApiRequest,
+  req: Request | NextRequest,
 ) {
   const searchParams = new URL(req.url || '').searchParams
 

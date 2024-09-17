@@ -1,5 +1,4 @@
-import type { NextApiRequest } from 'next'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import yf from 'yahoo-finance2'
 
 
@@ -8,7 +7,7 @@ const intervals = ["1m", "2m", "5m", "15m", "30m", "60m", "90m", "1h", "1d", "5d
 type Interval = "1m" | "2m" | "5m" | "15m" | "30m" | "60m" | "90m" | "1h" | "1d" | "5d" | "1wk" | "1mo" | "3mo" | undefined
 
 export async function GET(
-  req: NextApiRequest,
+  req: Request | NextRequest,
 ) {
   const searchParams = new URL(req.url || '').searchParams
 
@@ -30,6 +29,15 @@ export async function GET(
     return NextResponse.json({ error: 'startDate is required to chart action' })
   }
 
-  const chart = await yf.chart(symbol, { period1: startDate, period2: endDate, interval })
-  return NextResponse.json({ ...chart, message: 'receba!' })
+  if (intervals.indexOf(interval) == -1) {
+    return NextResponse.json({ error: 'Se você quiser começar a usar a porra do enum, fica a vontade. Usa essa merda caralho', intervals })
+  }
+
+  if (endDate) {
+    const chart = await yf.chart(symbol, { period1: startDate, period2: endDate, interval })
+    return NextResponse.json({ ...chart, message: 'receba!' })
+  } else {
+    const chart = await yf.chart(symbol, { period1: startDate, interval })
+    return NextResponse.json({ ...chart, message: 'receba!' })
+  }
 }
